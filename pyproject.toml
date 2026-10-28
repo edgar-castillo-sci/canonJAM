@@ -7,7 +7,7 @@ name = "canonjam"
 version = "1.2.0"
 description = "Canonicalization of JAM strings for duplicate detection in layered materials"
 readme = "README.md"
-requires-python = ">=3.19"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "Edgar Castillo", email = "edgar.castillo.sci@gmail.com"},
