@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "canonJAM: Canonicalization of JAM strings for duplicate detection"
-version: 1.2.0
-doi: 10.5281/zenodo.23720442
+version: 1.2.1
+doi: 10.5281/zenodo.23720668
 url: "https://github.com/edgar-castillo-sci/canonJAM"
 repository-code: "https://github.com/edgar-castillo-sci/canonJAM"
 license: MIT
