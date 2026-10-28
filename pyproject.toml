@@ -7,7 +7,7 @@ name = "canonjam"
 version = "1.2.0"
 description = "Canonicalization of JAM strings for duplicate detection in layered materials"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.19"
 license = {text = "MIT"}
 authors = [
     {name = "Edgar Castillo", email = "edgar.castillo.sci@gmail.com"},
@@ -21,7 +21,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -43,3 +42,15 @@ tests = [
 
 [tool.setuptools.packages.find]
 include = ["canonjam*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+    "tests/comparison",
+    "tests/exploration",
+    "*.egg",
+    ".*",
+    "__pycache__",
+    "build",
+    "dist",
+]

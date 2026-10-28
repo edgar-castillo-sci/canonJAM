@@ -1,6 +1,6 @@
 # canonJAM
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23471387.svg)](https://doi.org/10.5281/zenodo.23471387)
-![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Tests](https://img.shields.io/badge/tests-33%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
