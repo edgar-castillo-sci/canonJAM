@@ -1,3 +1,69 @@
+## [1.2.0] - 2026-10-27
+
+### Added
+
+- `canonjam/options.py`: single-layer rows per JAM option, exposed as
+  `rows_for_option`, `base_sets_for_option`, `base_tokens_for_option`.
+  Makes the package self-sufficient for the row sets and removes the
+  package's indirect dependence on `tests/validacion.py`.
+- `tests/comparison/` directory with the three scripts that compare
+  against the original pairwise method: `validation.py`, `full_report.py`,
+  `benchmark.py` (renamed from `tests/validacion.py`,
+  `tests/reporte_completo.py`, `tests/benchmark.py`).
+- `tests/comparison/README.md`: explains that these scripts require
+  `xjam2`, which is not distributed with canonJAM.
+- `.gitignore` covering `__pycache__`, `*.egg-info`, generated outputs
+  (`*_salida.txt`, `*_salida.tsv`), and the optional `xjam/`, `xjam2/`
+  directories.
+
+### Changed
+
+- Renamed `tests/validacion_tabla1.py` → `tests/validation_table1.py`
+  and `tests/escalabilidad.py` → `tests/scalability.py`. All filenames
+  in `tests/` are now in English.
+- All self-contained reproducibility scripts under `tests/` and
+  `tests/exploration/` now import `rows_for_option` from `canonjam`
+  instead of from `tests/validacion.py`. They no longer require
+  `xjam2` to run.
+- The three comparison scripts under `tests/comparison/` now fail with
+  a clear message when `xjam2` is not installed, instead of raising
+  `ModuleNotFoundError`.
+- `examples/x_canonical.py`: fail with a clear message if `xjam2` is
+  not installed (instead of `ModuleNotFoundError`).
+- `examples/pipeline.py`: uses `rows_for_option` from `canonjam`
+  instead of a local copy.
+- `README.md`, `README.es.md`, `tests/README.md`: reorganize the
+  reproducibility section into self-contained vs. comparison, add an
+  explicit "Integration with xjam2 (monkey patching)" section, and
+  clarify that canonJAM does not vendor or modify `xjam2`.
+
+### Fixed
+
+- `generate_group` and `canonical_key_fast` treat option 5 as
+  planar-type (`v = flip`), as stated in Section 3.3 of the paper
+  (options 1, 2, 5 are planar; 3, 4, 6, 7, 8 are buckled). No change
+  in results because the option 5 alphabet is sign-invariant, but this
+  makes code and paper consistent and avoids silent breakage if the
+  alphabet changes.
+- `tests/test_canonical_fast.py`: imports `rows_for_option` from
+  `canonjam` instead of using a local copy. The local copy returned
+  one row per option, so the test was run on 1-2 chains per option at
+  n=2, not on all permutations. After the fix, it runs on all
+  permutations for n=2,3 (5,655 chains instead of ~15), so the
+  "verified for all 8 options and n=2,3" claim in the README is now
+  accurate.
+
+### Removed
+
+- `tests/exploration/validation.py` (duplicate of `tests/validacion.py`;
+  removed after the reorganization).
+
+### Notes
+
+- `canonJAM` does not vendor or modify `xjam2`. Only its public API is
+  used, and only in the comparison scripts and the optional integration
+  example.
+
 ## [1.1.0] - 2026-10-21
 
 ### Added

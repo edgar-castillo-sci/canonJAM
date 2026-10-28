@@ -1,34 +1,26 @@
 # Tests and reproducibility scripts
 
-This directory contains three kinds of scripts:
+This directory contains four kinds of scripts:
 
 1. A **formal test suite** (`test_canonical.py`, `test_canonical_fast.py`)
    that validates the package itself. Does not require `xjam2`.
-2. **Reproducibility scripts** for the theoretical results of the
-   package. Most are self-contained; `validacion.py` and
-   `reporte_completo.py` optionally use `xjam2` as a baseline.
-3. An **exploration** subdirectory (`exploration/`) with scripts used to
+2. **Self-contained reproducibility scripts** for the theoretical
+   results of the paper. Do not require `xjam2`.
+3. **Comparison scripts** under `comparison/` that check the canonical
+   filter against the original pairwise method of the JAM framework.
+   **Require `xjam2`.** See `comparison/README.md` for details.
+4. An **exploration** subdirectory (`exploration/`) with scripts used to
    construct and verify the BPL/BU G-set isomorphism and to explore the
    classification of G-sets. Not part of the reproducibility suite.
 
 ## Requirements
 
-The formal test suite and most reproducibility scripts are
-self-contained. Only `validacion.py` and `reporte_completo.py` need
-`xjam2` as an optional baseline. Two options:
+The formal test suite, the self-contained reproducibility scripts, and
+the exploration scripts depend only on `numpy` and `canonjam`.
 
-**Option A: install from the original repository**
-```bash
-pip install git+https://github.com/Theochem-merida/xjam2.git
-```
-
-**Option B: use a local copy**
-```bash
-export PYTHONPATH=/path/to/xjam2:$PYTHONPATH
-```
-
-Note: installing `xjam2` via `pip` may fail with newer setuptools versions
-(`pkg_resources` was removed). If so, use Option B.
+The three scripts under `comparison/` require `xjam2`, which is an
+optional third-party package and is not distributed with canonJAM. See
+`comparison/README.md` for installation instructions.
 
 ## Running the formal tests
 
@@ -38,75 +30,32 @@ pip install -e ".[tests]"
 pytest tests/test_canonical.py tests/test_canonical_fast.py -v
 ```
 
-## Reproducibility scripts
+## Self-contained reproducibility scripts
 
-### `validacion.py`
+These scripts reproduce the empirical checks of the paper using only
+`numpy` and `canonjam`. Run any of them from the repository root or from
+this directory.
 
-Validates the canonical method against the original pairwise method for
-all 8 JAM options, verifying that both produce the same equivalence classes.
-
-```bash
-python3 validacion.py
-python3 validacion.py --levels 2 3 4
-```
-
-Options:
-- `--levels`: layer counts to validate (default: `2 3`).
-  `n=2` and `n=3` are sufficient. `n>=4` is slow for the original method.
-  `n>=5` is prohibitively slow.
-
-### `validacion_tabla1.py`
+### `validation_table1.py`
 
 Checks the class counts against Table 1 of [Arcudia2023] for n=2,3,4,5
 on all 8 options.
 
 ```bash
-python3 validacion_tabla1.py
+python3 validation_table1.py
 ```
 
-### `reporte_completo.py`
+### `scalability.py`
 
-Generates a detailed report with all canonical keys produced by each
-method, side by side.
+Scalability experiment for the planar case up to n=12. Uses the
+canonical filter for intermediate deduplication, which is what makes
+generation feasible at that scale.
 
 ```bash
-python3 reporte_completo.py
-python3 reporte_completo.py --levels 2 3 4 --output /tmp/report.txt
+python3 scalability.py
 ```
 
-Options:
-- `--levels`: layer counts to report (default: `2 3`).
-- `--output`: output file path (default: `reporte_completo_salida.txt`).
-
-### `benchmark.py`
-
-Measures the filtering time of both methods. The original method is O(m²),
-so it is measured only while its estimated time stays below `--max-time`
-(default: 30 s). Above that threshold, only the canonical method is measured.
-
-```bash
-python3 benchmark.py
-python3 benchmark.py --options 1 5 --levels 2 3 4 5 --max-time 60
-```
-
-Options:
-- `--levels`: layer counts to benchmark (default: `2 3 4 5`).
-- `--options`: JAM options to benchmark (default: `1 5 7`).
-- `--max-time`: max estimated time for the original method, in seconds
-  (default: 30).
-- `--output`: output TSV file path (default: `benchmark_salida.tsv`).
-
-### `escalabilidad.py`
-
-Scalability experiment for the planar case up to n=12. Self-contained:
-uses the canonical filter for intermediate deduplication, which is what
-makes generation feasible at that scale.
-
-```bash
-python3 escalabilidad.py
-```
-
-Expected output:
+Expected output (approximately):
 ```
 n=6:  m=150,     classes=70,     gen=0.05s, filter=0.03s
 n=8:  m=1,176,   classes=574,    gen=0.41s, filter=0.27s
@@ -118,7 +67,7 @@ n=12: m=89,304,  classes=44,530, gen=34.68s, filter=22.77s
 
 Verifies that the closed forms derived via Burnside's lemma agree with
 the recursive formulas of [Arcudia2023] for n=2..30, for PL, BPL/BU,
-and BBU. Self-contained.
+and BBU.
 
 ```bash
 python3 recursion_check.py
@@ -159,6 +108,61 @@ python3 kappa_equal_kappa_prime.py
 ```
 
 Expected output: `kappa == kappa' for all options and n=2,3`.
+
+## Comparison scripts (`comparison/`)
+
+These scripts compare the canonical filter against the original
+pairwise method of the JAM framework. They **require `xjam2`** (see
+`comparison/README.md`).
+
+### `comparison/validation.py`
+
+Validates the canonical method against the original pairwise method for
+all 8 JAM options, verifying that both produce the same equivalence
+classes.
+
+```bash
+python3 comparison/validation.py
+python3 comparison/validation.py --levels 2 3 4
+```
+
+Options:
+- `--levels`: layer counts to validate (default: `2 3`).
+  `n=2` and `n=3` are sufficient. `n>=4` is slow for the original method.
+  `n>=5` is prohibitively slow.
+
+### `comparison/full_report.py`
+
+Generates a detailed report with all canonical keys produced by each
+method, side by side.
+
+```bash
+python3 comparison/full_report.py
+python3 comparison/full_report.py --levels 2 3 4 --output /tmp/report.txt
+```
+
+Options:
+- `--levels`: layer counts to report (default: `2 3`).
+- `--output`: output file path (default: `full_report_salida.txt`).
+
+### `comparison/benchmark.py`
+
+Measures the filtering time of both methods. The original method is
+O(m²), so it is measured only while its estimated time stays below
+`--max-time` (default: 30 s). Above that threshold, only the canonical
+method is measured.
+
+```bash
+python3 comparison/benchmark.py
+python3 comparison/benchmark.py --options 1 5 --levels 2 3 4 5 --max-time 60
+```
+
+Options:
+- `--levels`: layer counts to benchmark (default: `2 3 4 5`).
+- `--options`: JAM options to benchmark (default: `1 5 7`).
+- `--max-time`: max estimated time for the original method, in seconds
+  (default: 30).
+- `--output`: output TSV file path (default: `benchmark_salida.tsv`).
 
 ## Exploration scripts (`exploration/`)
 
