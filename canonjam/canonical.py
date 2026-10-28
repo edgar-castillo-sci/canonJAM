@@ -102,16 +102,17 @@ def generate_group(optionx):
     """
     Generate the group of operations for the given option.
 
-    Planar options (1, 2): no buckling. The group is S3 × {e, flip},
-    with 12 elements. Sign does not apply.
+    Planar options (1, 2, 5): no buckling. The group is S3 × {e, flip},
+    with 12 elements. Sign does not apply (option 5's alphabet is sign-invariant,
+    so sign·flip ≡ flip on X_5).
 
-    Buckled options (3-8): the relevant vertical symmetry is the
+    Buckled options (3, 4, 6, 7, 8): the relevant vertical symmetry is the
     composition sign·flip (global reflection). The group is
     S3 × {e, sign·flip}, with 12 elements.
     """
     S3 = elements_S3()
 
-    if optionx in [1, 2]:
+    if optionx in [1, 2, 5]:
         Z2_vertical = [
             lambda a: a,
             lambda a: flip(a.copy())
@@ -176,7 +177,7 @@ def canonical_key_fast(a, optionx):
     Verified to agree with `canonical_key` for all 8 options and n=2,3;
     see tests/test_canonical_fast.py.
     """
-    if optionx in [1, 2]:
+    if optionx in [1, 2, 5]:
         va = flip(a.copy())
     else:
         va = sign(flip(a.copy()))

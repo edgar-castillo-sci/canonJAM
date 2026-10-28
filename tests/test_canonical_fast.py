@@ -5,28 +5,7 @@ import itertools
 import numpy as np
 import pytest
 
-from canonjam import canonical_key, canonical_key_fast
-
-
-def rows_for_option(option):
-    """Single-layer rows for each option (mirror of validacion.rows_for_option)."""
-    if option == 1:
-        return [['+0', '+j', '+j']]
-    if option == 2:
-        return [['+0', '+j', '+k']]
-    if option == 3:
-        return [['+0', '+j', '-j']]
-    if option == 4:
-        return [['+0', '+j', '-k'], ['+0', '-j', '+k']]
-    if option == 5:
-        return [['+0', '*j', '(+k-k)']]
-    if option == 6:
-        return [['*j', '+k', '-k']]
-    if option == 7:
-        return [['+0', '*j', '(+k-l)'], ['+0', '*j', '(-k+l)']]
-    if option == 8:
-        return [['*j', '+k', '-l'], ['*j', '-k', '+l']]
-    raise ValueError(f"Invalid option: {option}")
+from canonjam import canonical_key, canonical_key_fast, rows_for_option
 
 
 def all_chains(n, option):
