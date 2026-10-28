@@ -27,4 +27,4 @@ __all__ = [
 from .options import rows_for_option, base_sets_for_option, base_tokens_for_option
 __all__ = [..., "rows_for_option", "base_sets_for_option", "base_tokens_for_option"]
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
