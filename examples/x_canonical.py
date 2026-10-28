@@ -11,6 +11,10 @@ Requirements:
   - xjam2 must be importable (installed or in PYTHONPATH)
   - A valid JAM.inp must exist in the current directory
 
+xjam2 is NOT a dependency of canonJAM. This file is an optional
+integration example for users who already have xjam2 installed.
+If xjam2 is missing, the script exits with a clear message.
+
 Usage:
     python3 x_canonical.py
 """
@@ -18,9 +22,20 @@ Usage:
 import os
 import sys
 
-# 1. Import xjam2 modules
-import xjam.libjamstd as std
-import xjam.libjamtdm as tdm
+# 1. Import xjam2 (optional, with a clear error if missing)
+try:
+    import xjam.libjamstd as std
+    import xjam.libjamtdm as tdm
+except ImportError:
+    print(
+        "x_canonical.py requires xjam2 to be installed.\n"
+        "canonJAM itself does NOT depend on xjam2; this file is only\n"
+        "an optional integration example for users who already have it.\n\n"
+        "To install xjam2, see examples/README.md, or:\n"
+        "  pip install git+https://github.com/Theochem-merida/xjam2.git\n"
+        "  (or export PYTHONPATH=/path/to/xjam2:$PYTHONPATH)"
+    )
+    sys.exit(1)
 
 # 2. Import the canonical filter
 from canonjam import filter_duplicates

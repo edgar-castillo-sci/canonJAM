@@ -4,7 +4,7 @@ from itertools import product
 from collections import defaultdict
 import numpy as np
 from canonjam.canonical import generate_group, array_to_chain
-from validacion import rows_for_option
+from canonjam import rows_for_option
 
 def all_chains(n, option):
     single = [tuple(r) for r in rows_for_option(option)]

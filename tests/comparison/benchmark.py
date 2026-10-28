@@ -48,17 +48,25 @@ from time import perf_counter
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _SCRIPT_DIR)
 
-from xjam.libjamstd import (
-    disc_equivalents as disc_old_std,
-    conv2pseudocanonic as conv_std,
-)
-from xjam.libjamtdm import (
-    disc_equivalents as disc_old_tdm,
-    conv2pseudocanonic as conv_tdm,
-)
+try:
+    from xjam.libjamstd import (
+        disc_equivalents as disc_old_std,
+        conv2pseudocanonic as conv_std,
+    )
+    from xjam.libjamtdm import (
+        disc_equivalents as disc_old_tdm,
+        conv2pseudocanonic as conv_tdm,
+    )
+except ImportError as exc:
+    raise SystemExit(
+        "This comparison script requires xjam2, which is optional and "
+        "not a dependency of canonJAM. See tests/comparison/README.md.\n"
+        f"Underlying error: {exc}"
+    ) from exc
 from canonjam import (
     canonical_key,
     filter_duplicates,
+    rows_for_option,
 )
 
 
@@ -73,39 +81,6 @@ def get_methods(option):
     if option in [1, 2, 3, 4]:
         return disc_old_std, conv_std
     return disc_old_tdm, conv_tdm
-
-
-def rows_for_option(option):
-    """Return the possible single layers for the given option."""
-    if option == 1:
-        tokens = ['+0', '+j', '+j']
-    elif option == 2:
-        tokens = ['+0', '+j', '+k']
-    elif option == 3:
-        tokens = ['+0', '+j', '-j']
-    elif option == 4:
-        a = ['+0', '+j', '-k']
-        b = ['+0', '-j', '+k']
-        rows = list(set(permutations(a, 3))) + list(set(permutations(b, 3)))
-        return [list(r) for r in rows]
-    elif option == 5:
-        tokens = ['+0', '*j', '(+k-k)']
-    elif option == 6:
-        tokens = ['*j', '+k', '-k']
-    elif option == 7:
-        a = ['+0', '*j', '(+k-l)']
-        b = ['+0', '*j', '(-k+l)']
-        rows = list(set(permutations(a, 3))) + list(set(permutations(b, 3)))
-        return [list(r) for r in rows]
-    elif option == 8:
-        a = ['*j', '+k', '-l']
-        b = ['*j', '-k', '+l']
-        rows = list(set(permutations(a, 3))) + list(set(permutations(b, 3)))
-        return [list(r) for r in rows]
-    else:
-        raise ValueError(f"Invalid option: {option}")
-
-    return [list(r) for r in set(permutations(tokens, 3))]
 
 
 def generate_candidates(n, option):

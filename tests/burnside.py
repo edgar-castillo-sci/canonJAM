@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from itertools import product
 import numpy as np
 from canonjam import generate_group
-from validacion import rows_for_option
+from canonjam import rows_for_option
 
 def all_chains(n, option):
     single = [tuple(r) for r in rows_for_option(option)]

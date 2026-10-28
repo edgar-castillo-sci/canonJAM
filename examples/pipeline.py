@@ -17,40 +17,7 @@ import argparse
 import numpy as np
 from itertools import permutations
 
-from canonjam import filter_duplicates
-
-
-def rows_for_option(option):
-    """Return the possible single layers for the given JAM option."""
-    if option == 1:
-        tokens = ['+0', '+j', '+j']
-    elif option == 2:
-        tokens = ['+0', '+j', '+k']
-    elif option == 3:
-        tokens = ['+0', '+j', '-j']
-    elif option == 4:
-        a = ['+0', '+j', '-k']
-        b = ['+0', '-j', '+k']
-        rows = list(set(permutations(a, 3))) + list(set(permutations(b, 3)))
-        return [list(r) for r in rows]
-    elif option == 5:
-        tokens = ['+0', '*j', '(+k-k)']
-    elif option == 6:
-        tokens = ['*j', '+k', '-k']
-    elif option == 7:
-        a = ['+0', '*j', '(+k-l)']
-        b = ['+0', '*j', '(-k+l)']
-        rows = list(set(permutations(a, 3))) + list(set(permutations(b, 3)))
-        return [list(r) for r in rows]
-    elif option == 8:
-        a = ['*j', '+k', '-l']
-        b = ['*j', '-k', '+l']
-        rows = list(set(permutations(a, 3))) + list(set(permutations(b, 3)))
-        return [list(r) for r in rows]
-    else:
-        raise ValueError(f"Invalid option: {option}")
-
-    return [list(r) for r in set(permutations(tokens, 3))]
+from canonjam import filter_duplicates, rows_for_option
 
 
 def generate_unique(n, option):

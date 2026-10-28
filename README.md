@@ -22,9 +22,17 @@ The JAM notation is described in:
 > representation for honeycomb layered materials." Matter, 6(5),
 > 1503–1513. doi: 10.1016/j.matt.2023.02.014
 
-The package is self-contained: it does not require `xjam2` at runtime.
-The validation tests optionally use `xjam2` to compare against the
-original pairwise method.
+canonJAM itself is self-contained: it depends only on `numpy` at
+runtime. It does **not** require `xjam2`, and it does **not** vendor or
+modify any xjam2 code.
+
+`xjam2` is used only by:
+
+- the comparison scripts in `tests/comparison/`, which check the
+  canonical filter against the original pairwise method;
+- the optional integration example `examples/x_canonical.py`.
+
+Those scripts fail with a clear message if `xjam2` is missing.
 
 > **Note on the formalization.** The PDF in `docs/` is the initial
 > formalization of the method. The current implementation reflects a
@@ -32,7 +40,7 @@ original pairwise method.
 > options, the vertical symmetry is the composition `sign·flip`, not
 > `sign` and `flip` independently. The group for all options has order
 > 12. See `canonjam/canonical.py` and the section "The symmetry
-> group" above for the current version.
+> group" below for the current version.
 
 ## Installation
 
@@ -40,11 +48,15 @@ original pairwise method.
 pip install -e .
 ```
 
-For running the validation tests:
+For running the formal tests:
 
 ```bash
 pip install -e ".[tests]"
 ```
+
+`xjam2` is **not** installable via PyPI. The comparison scripts and the
+integration example expect it on `PYTHONPATH` or installed from source;
+see `tests/comparison/README.md`.
 
 ## Usage
 
@@ -79,14 +91,14 @@ by pairwise comparison, which is O(m²). This package replaces that
 with a dictionary of canonical keys, which is O(m).
 
 The canonical key of a structure is the lexicographic minimum of its
-orbit under the symmetry group. Two equivalent structures produce
-the same key.
+orbit under the symmetry group. Two equivalent structures produce the
+same key.
 
 The package provides two implementations:
 
 - `canonical_key`: the literal definition (minimum over the 12 group
-  elements). Used in the benchmarks for direct correspondence with
-  the theory.
+  elements). Used in the benchmarks for direct correspondence with the
+  theory.
 - `canonical_key_fast`: the optimal computation via column sorting
   (minimum of the sorted-column concatenations of the chain and its
   v-image). O(k) with a constant of 2. Verified to agree with
@@ -94,11 +106,12 @@ The package provides two implementations:
 
 ## The symmetry group
 
-For option 1 (planar monoelemental) and option 2 (planar binary):
+For option 1 (planar monoelemental), option 2 (planar binary), and
+option 5 (planar with an extended site-occupancy token):
 
     G = S3 × {e, flip}
 
-For options 3–8 (buckled and ternary):
+For options 3, 4, 6, 7, 8 (buckled and Janus variants):
 
     G = S3 × {e, sign·flip}
 
@@ -110,37 +123,79 @@ Arcudia.
 
 ## Contents
 
-- `canonjam/` — the package.
-- `tests/` — reproducibility scripts for the theoretical results,
-  the formal test suite, and (under `tests/exploration/`) exploratory
-  scripts for the BPL/BU dichotomy and the classification of G-sets.
+- `canonjam/` — the package (`canonical.py`, `options.py`).
+- `tests/` — formal test suite (`test_canonical.py`,
+  `test_canonical_fast.py`) and self-contained reproducibility scripts
+  (no `xjam2` required).
+- `tests/comparison/` — scripts that compare against the original
+  pairwise method. **Require `xjam2`.**
+- `tests/exploration/` — exploratory scripts for the BPL/BU dichotomy
+  and the classification of G-sets (companion work; self-contained).
+- `examples/` — usage examples. `pipeline.py` is self-contained;
+  `x_canonical.py` is the integration example and requires `xjam2`.
 - `docs/` — formal mathematical description (PDF).
+
+## Integration with xjam2 (monkey patching)
+
+If you already have `xjam2` installed and want to use canonJAM as a
+drop-in replacement for its pairwise filter, `examples/x_canonical.py`
+shows how. It monkey-patches `disc_equivalents` in `xjam.libjamstd`
+and `xjam.libjamtdm` to use `filter_duplicates` from canonJAM, then
+runs `x.jam` from the current directory.
+
+```bash
+# 1. Install xjam2 (from source; it is not on PyPI)
+pip install git+https://github.com/Theochem-merida/xjam2.git
+# or:  export PYTHONPATH=/path/to/xjam2:$PYTHONPATH
+
+# 2. From a directory with x.jam and JAM.inp:
+python3 /path/to/canonJAM/examples/x_canonical.py
+```
+
+The canonical method performs both the `eqnum=1` and `eqnum=2` passes
+in a single call, so `eqnum` is ignored by the replacement.
+
+**Important:** this is a monkey patch of xjam2's public API. canonJAM
+does not modify or vendor xjam2's source. If xjam2's internal API
+changes, the patch may need updating. See `examples/README.md` for
+details and caveats.
 
 ## Reproducing the theoretical results
 
-The scripts in `tests/` reproduce the empirical checks reported in the
-package's theoretical write-up. All of them are self-contained (no
-`xjam2` required) unless noted otherwise.
+### Self-contained (no `xjam2` required)
+
+These scripts reproduce the class counts, the closed forms, the
+structural theorems, and the κ = κ' check. They need only `numpy`
+and `canonjam`.
 
 | Script | Reproduces |
 |---|---|
-| `tests/validacion_tabla1.py` | Class counts against Table 1 of [Arcudia2023] for n=4,5 |
-| `tests/escalabilidad.py` | Scalability experiment for n=6,8,10,12 (planar) |
+| `tests/validation_table1.py` | Class counts against Table 1 of [Arcudia2023] for n=4,5 |
+| `tests/scalability.py` | Scalability experiment for n=6,8,10,12 (planar) |
 | `tests/recursion_check.py` | Closed forms vs. recursive formulas up to n=30 |
 | `tests/burnside.py`, `tests/burnside_all.py` | Fixed-point counts per conjugacy class |
 | `tests/structural.py`, `tests/structural_all.py` | Orbits vs. column multisets |
 | `tests/kappa_equal_kappa_prime.py` | Literal vs. optimal computation of κ |
-| `tests/benchmark.py` | Filtering-time comparison |
-| `tests/validacion.py`, `tests/reporte_completo.py` | Pairwise vs. canonical comparison |
 
-Run any of them from the `tests/` directory, e.g.:
+Run any of them from the repository root:
 
 ```bash
-cd tests
-python3 validacion_tabla1.py
-python3 escalabilidad.py
-python3 recursion_check.py
+python3 tests/validation_table1.py
+python3 tests/scalability.py
+python3 tests/recursion_check.py
 ```
+
+### Comparison (require `xjam2`)
+
+These scripts check the canonical filter against the original pairwise
+method of the JAM framework. They require `xjam2`; see
+`tests/comparison/README.md`.
+
+| Script | Reproduces |
+|---|---|
+| `tests/comparison/validation.py` | Pairwise vs. canonical, per option and n |
+| `tests/comparison/full_report.py` | Detailed key-by-key report |
+| `tests/comparison/benchmark.py` | Filtering-time comparison |
 
 ## Running the formal tests
 

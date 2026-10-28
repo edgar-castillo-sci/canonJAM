@@ -1,10 +1,16 @@
+# xjam / xjam2 are optional third-party packages, never vendorized
+xjam/
+xjam2/
+
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.egg-info/
+.pytest_cache/
 build/
 dist/
-.venv/
 
-# Test outputs
-tests/*_salida.txt
-tests/*_salida.tsv
+# Generated outputs
+todos_los_python.txt
+**/*_salida.txt
+**/*_salida.tsv
