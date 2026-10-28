@@ -1,3 +1,29 @@
+## [1.2.1] - 2026-10-27
+
+### Changed
+
+- `.github/workflows/tests.yml`: `fail-fast: false`. Previously, a
+  failure in one Python version cancelled the others and hid their
+  status (only the first to fail reported the real error; the rest
+  appeared as `cancelled`). With `fail-fast: false`, all five jobs
+  report their own status.
+- `CITATION.cff`: DOI updated to `10.5281/zenodo.23720442` (version
+  DOI for v1.2.0). The concept DOI (`10.5281/zenodo.23471387`)
+  remains in the README badge, where it always resolves to the
+  latest version.
+- `README.md`: the test badge now points to the GitHub Actions
+  workflow badge, so it reflects the actual state of `main` instead
+  of the hardcoded `tests-33 passing`.
+
+### Added
+
+- `.pre-commit-config.yaml` and `scripts/check_requires_python.py`:
+  validate that `pyproject.toml` declares `requires-python` in the
+  form `>=3.X,<4` with `10 <= X <= (current minor + 2)`. Rejects
+  both typos like `>=3.19` (impossible, this is what broke the
+  `99857bc` CI run) and stale values like `>=3.9` (EOL).
+  Activate with `pip install pre-commit && pre-commit install`.
+
 ## [1.2.0] - 2026-10-27
 
 ### Added
