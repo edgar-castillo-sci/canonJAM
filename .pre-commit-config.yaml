@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: check-requires-python
         name: check requires-python range
-        entry: python3 scripts/check_requires_python.py
+        entry: python3 .github/scripts/check_requires_python.py
         language: system
         files: ^pyproject\.toml$
         pass_filenames: false

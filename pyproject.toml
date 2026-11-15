@@ -47,10 +47,8 @@ include = ["canonjam*"]
 testpaths = ["tests"]
 norecursedirs = [
     "tests/comparison",
-    "tests/exploration",
-    "*.egg",
-    ".*",
-    "__pycache__",
-    "build",
-    "dist",
+    "historical",
+    "reproducibility",
+    ".git",
+    "*.egg-info",
 ]
