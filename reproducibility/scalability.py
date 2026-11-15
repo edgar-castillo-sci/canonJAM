@@ -1,8 +1,12 @@
-import sys, os, time
+import os
+import sys
+import time
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np
-from canonjam import filter_duplicates
-from canonjam import rows_for_option
+
+from canonjam import filter_duplicates, rows_for_option
+
 
 def gen_candidates_canonical(n, option):
     single = [np.array(r) for r in rows_for_option(option)]

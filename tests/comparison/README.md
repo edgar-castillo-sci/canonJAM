@@ -31,9 +31,7 @@ two levels up in `reproducibility/`:
     reproducibility/validation_table1.py
     reproducibility/scalability.py
     reproducibility/burnside.py
-    reproducibility/burnside_all.py
     reproducibility/structural.py
-    reproducibility/structural_all.py
     reproducibility/kappa_equal_kappa_prime.py
     reproducibility/recursion_check.py
 

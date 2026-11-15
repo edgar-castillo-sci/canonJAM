@@ -1,8 +1,10 @@
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np
-from canonjam import filter_duplicates
-from canonjam import rows_for_option
+
+from canonjam import filter_duplicates, rows_for_option
 
 TABLE1 = {
     1: {2: 2, 3: 4, 4: 10, 5: 25},

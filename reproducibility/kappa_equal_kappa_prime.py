@@ -1,9 +1,14 @@
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from itertools import product
+
 import numpy as np
-from canonjam.canonical import generate_group, flip, sign, array_to_chain
+
 from canonjam import rows_for_option
+from canonjam.canonical import array_to_chain, flip, generate_group, sign
+
 
 def all_chains(n, option):
     single = [tuple(r) for r in rows_for_option(option)]
