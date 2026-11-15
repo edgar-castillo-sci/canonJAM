@@ -42,7 +42,6 @@ import csv
 import numpy as np
 import sys
 import os
-from itertools import permutations
 from time import perf_counter
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -64,7 +63,6 @@ except ImportError as exc:
         f"Underlying error: {exc}"
     ) from exc
 from canonjam import (
-    canonical_key,
     filter_duplicates,
     rows_for_option,
 )

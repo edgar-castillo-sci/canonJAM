@@ -26,7 +26,6 @@ import argparse
 import numpy as np
 import sys
 import os
-from itertools import permutations
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _SCRIPT_DIR)

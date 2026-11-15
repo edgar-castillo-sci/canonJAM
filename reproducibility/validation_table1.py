@@ -1,6 +1,5 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from itertools import permutations
 import numpy as np
 from canonjam import filter_duplicates
 from canonjam import rows_for_option

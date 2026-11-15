@@ -15,7 +15,6 @@ Usage:
 
 import argparse
 import numpy as np
-from itertools import permutations
 
 from canonjam import filter_duplicates, rows_for_option
 
