@@ -45,6 +45,7 @@ include = ["canonjam*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--doctest-modules"
 norecursedirs = [
     "tests/comparison",
     "historical",
