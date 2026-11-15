@@ -26,16 +26,16 @@ Or use a local copy:
 ## If you don't need xjam2
 
 The self-contained reproducibility scripts (no xjam2 required) live
-one level up in `tests/`:
+two levels up in `reproducibility/`:
 
-    tests/validation_table1.py
-    tests/scalability.py
-    tests/burnside.py
-    tests/burnside_all.py
-    tests/structural.py
-    tests/structural_all.py
-    tests/kappa_equal_kappa_prime.py
-    tests/recursion_check.py
+    reproducibility/validation_table1.py
+    reproducibility/scalability.py
+    reproducibility/burnside.py
+    reproducibility/burnside_all.py
+    reproducibility/structural.py
+    reproducibility/structural_all.py
+    reproducibility/kappa_equal_kappa_prime.py
+    reproducibility/recursion_check.py
 
 They reproduce the class counts, the closed forms, the structural
 theorems, and the κ = κ' check, using only `numpy` and `canonjam`.
