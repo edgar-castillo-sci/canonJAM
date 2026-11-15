@@ -1,32 +1,25 @@
+# docs/
 
-# Documentation
-
-This folder contains supporting documents for the project.
+Documentation directory of `canonJAM`.
 
 ## Contents
 
-- `Sobre_la_canonicalizacion_de_cadenas_JAM.pdf`: initial formalization of the
-  canonicalization method. Written in Spanish.
+- **`adr/`** — Architectural Decision Records. Each ADR captures one
+  non-trivial decision: why it was made, what alternatives were
+  rejected, and what is gained and lost. See
+  [`adr/`](adr/) for the list; the index is also in
+  [`../DESIGN.md`](../DESIGN.md#index-of-adrs).
+- **`conventions.md`** — Minor project conventions (filenames,
+  bilingual READMEs, CI scripts, commit messages, file-move
+  checklist).
 
-## Note on the symmetry group
+## Not here
 
-The PDF describes the vertical symmetry as four independent operations
-(`r`, `t`, `f`, `c`), giving a group of order 24 for buckled options.
-
-The current implementation reflects a later correction, confirmed by
-Dr. Jessica Arcudia:
-
-- The vertical symmetry for buckled options is the composition `sign·flip`,
-  not `sign` and `flip` independently.
-- The group has order 12 for all options.
-- The canonical key is the same in both formulations (the orbit is smaller,
-  but the minimum is the same).
-
-See `canonjam/canonical.py` and the main README for the current
-formulation.
-
-## Regenerating
-
-The PDF is a static document. If the method changes substantially, it
-should be replaced with an updated version. The current code is the
-authoritative source.
+- **Orientation** (what `canonJAM` is, install, quickstart) lives in
+  [`../README.md`](../README.md).
+- **Architecture** (scope, API surface, what this is NOT) lives in
+  [`../DESIGN.md`](../DESIGN.md).
+- **Formal mathematical description**: the initial PDF
+  (`Sobre_la_canonicalizacion_de_cadenas_JAM.pdf`) was removed in
+  v1.3.0; the paper supersedes it. See the "Related artifacts"
+  section of the README for the current reference.
