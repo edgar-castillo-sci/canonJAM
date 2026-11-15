@@ -7,7 +7,9 @@ For each JAM option and each number of layers, this script:
   3. Filters them with the canonical method.
   4. Verifies that both produce the same equivalence classes.
 
-Output: a summary per option, with a final pass/fail.
+Output: a summary per option, with a final pass/fail. The candidate
+generation logic itself lives in ``_helpers.py``.
+
 Exit code: 0 if all pass, 1 if any fail.
 
 Default validation levels: n=2 and n=3 are sufficient to verify that
@@ -19,76 +21,35 @@ is non-trivial.
 
 The levels can be overridden from the command line:
 
-    python3 validacion.py --levels 2 3 4
+    python3 validation.py --levels 2 3 4
 """
 
 import argparse
-import numpy as np
 import sys
-import os
 
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, _SCRIPT_DIR)
+from _helpers import generate_candidates, get_methods
 
-try:
-    from xjam.libjamstd import (
-        disc_equivalents as disc_old_std,
-        conv2pseudocanonic as conv_std,
-    )
-    from xjam.libjamtdm import (
-        disc_equivalents as disc_old_tdm,
-        conv2pseudocanonic as conv_tdm,
-    )
-except ImportError as exc:
-    raise SystemExit(
-        "This comparison script requires xjam2, which is optional and "
-        "not a dependency of canonJAM. See tests/comparison/README.md.\n"
-        f"Underlying error: {exc}"
-    ) from exc
-from canonjam import (
-    canonical_key,
-    filter_duplicates,
-    rows_for_option,
-)
-
+from canonjam import canonical_key, filter_duplicates
 
 DEFAULT_LEVELS = [2, 3]
 
 
-def get_methods(option):
-    """Return the appropriate old-method functions for the given option."""
-    if option in [1, 2, 3, 4]:
-        return disc_old_std, conv_std
-    return disc_old_tdm, conv_tdm
-
-
-def generate_candidates(n, option):
-    """Generate all candidates for n layers, replicating x.jam's logic."""
-    disc_old, conv = get_methods(option)
-
-    single = [np.array(r) for r in rows_for_option(option)]
-    uniques = single.copy()
-
-    candidates = single
-    for level in range(2, n + 1):
-        if level == 2:
-            candidates = [
-                np.vstack([a, b]) for a in uniques for b in single
-            ]
-        else:
-            down = [np.vstack([a, b]) for a in uniques for b in single]
-            up = [np.vstack([b, a]) for a in uniques for b in single]
-            candidates = down + up
-
-        canonical = [conv(c) for c in candidates]
-        uniques = disc_old(canonical, option, 1)
-        uniques = disc_old(uniques, option, 2)
-
-    return candidates
-
-
 def validate(option, n):
-    """Validate both methods for a given option and number of layers."""
+    """Validate both methods for a given option and number of layers.
+
+    Parameters
+    ----------
+    option : int
+        JAM option in 1..8.
+    n : int
+        Number of layers, >= 2.
+
+    Returns
+    -------
+    tuple
+        ``(passed, info)``. ``passed`` is a bool; ``info`` is the number
+        of classes if passed, or a description of the mismatch otherwise.
+    """
     disc_old, conv = get_methods(option)
 
     candidates = generate_candidates(n, option)
@@ -106,8 +67,8 @@ def validate(option, n):
         return False, f"count mismatch ({len(old_result)} vs {len(new_result)})"
 
     # Compare classes
-    old_keys = set(canonical_key(c, option) for c in old_result)
-    new_keys = set(canonical_key(c, option) for c in new_result)
+    old_keys = {canonical_key(c, option) for c in old_result}
+    new_keys = {canonical_key(c, option) for c in new_result}
 
     if old_keys != new_keys:
         return False, "class mismatch"
@@ -123,7 +84,7 @@ def parse_args():
             "pairwise method for all JAM options."
         ),
         epilog=(
-            "Example: python3 validacion.py --levels 2 3 4"
+            "Example: python3 validation.py --levels 2 3 4"
         ),
     )
     parser.add_argument(

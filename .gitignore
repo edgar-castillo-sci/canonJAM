@@ -12,5 +12,5 @@ dist/
 
 # Generated outputs
 todos_los_python.txt
-**/*_salida.txt
-**/*_salida.tsv
+**/*_output.txt
+**/*_output.tsv

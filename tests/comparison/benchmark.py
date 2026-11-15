@@ -4,20 +4,21 @@ Benchmark: filtering time, original method vs canonical method.
 Measures only the filtering stage (duplicate detection).
 Candidate generation uses the canonical method in intermediate steps,
 so that high n values are reachable without the original method being
-a bottleneck at the generation stage.
+a bottleneck at the generation stage. The candidate generation logic
+itself lives in ``_helpers.py``.
 
 Timing policy
 -------------
-The original method is O(m²) in the number of candidates, where m grows
+The original method is O(m^2) in the number of candidates, where m grows
 rapidly with n. For small n it is fast; for large n it becomes
 prohibitively slow. We measure the original method only while its
 estimated time is below MAX_TIME_OLD (in seconds). Above the threshold,
 we report "—" and measure only the canonical method.
 
-The estimate is computed from the first measured level, using O(m²)
+The estimate is computed from the first measured level, using O(m^2)
 scaling:
 
-    t_old(n) ≈ t_old(n_ref) * (m(n) / m(n_ref))²
+    t_old(n) ~= t_old(n_ref) * (m(n) / m(n_ref))^2
 
 The first level of each option is always measured for the original
 method, so the estimate has a reference point.
@@ -25,7 +26,7 @@ method, so the estimate has a reference point.
 Output
 ------
 A timing table is printed to the console and written to
-benchmark_salida.tsv next to this script.
+``benchmark_output.tsv`` next to this script.
 
 Exit code
 ---------
@@ -39,75 +40,37 @@ Override from the command line:
 
 import argparse
 import csv
-import numpy as np
-import sys
 import os
+import sys
 from time import perf_counter
 
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, _SCRIPT_DIR)
+from _helpers import generate_candidates, get_methods
 
-try:
-    from xjam.libjamstd import (
-        disc_equivalents as disc_old_std,
-        conv2pseudocanonic as conv_std,
-    )
-    from xjam.libjamtdm import (
-        disc_equivalents as disc_old_tdm,
-        conv2pseudocanonic as conv_tdm,
-    )
-except ImportError as exc:
-    raise SystemExit(
-        "This comparison script requires xjam2, which is optional and "
-        "not a dependency of canonJAM. See tests/comparison/README.md.\n"
-        f"Underlying error: {exc}"
-    ) from exc
-from canonjam import (
-    filter_duplicates,
-    rows_for_option,
-)
-
+from canonjam import filter_duplicates
 
 DEFAULT_LEVELS = [2, 3, 4, 5]
 DEFAULT_OPTIONS = [1, 5, 7]
 DEFAULT_MAX_TIME = 30.0
-OUTPUT_FILE = os.path.join(_SCRIPT_DIR, "benchmark_salida.tsv")
-
-
-def get_methods(option):
-    """Return the appropriate old-method functions for the given option."""
-    if option in [1, 2, 3, 4]:
-        return disc_old_std, conv_std
-    return disc_old_tdm, conv_tdm
-
-
-def generate_candidates(n, option):
-    """Generate all candidates for n layers, replicating x.jam's logic."""
-    disc_old, conv = get_methods(option)
-
-    single = [np.array(r) for r in rows_for_option(option)]
-    uniques = single.copy()
-
-    candidates = single
-    for level in range(2, n + 1):
-        if level == 2:
-            candidates = [
-                np.vstack([a, b]) for a in uniques for b in single
-            ]
-        else:
-            down = [np.vstack([a, b]) for a in uniques for b in single]
-            up = [np.vstack([b, a]) for a in uniques for b in single]
-            candidates = down + up
-
-        canonical = [conv(c) for c in candidates]
-        uniques = disc_old(canonical, option, 1)
-        uniques = disc_old(uniques, option, 2)
-
-    return candidates
+OUTPUT_FILE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "benchmark_output.tsv"
+)
 
 
 def time_original(candidates, option):
-    """Measure the filtering time of the original method."""
+    """Measure the filtering time of the original method.
+
+    Parameters
+    ----------
+    candidates : list of numpy.ndarray
+        Candidate chains at the target level.
+    option : int
+        JAM option in 1..8.
+
+    Returns
+    -------
+    tuple
+        ``(elapsed_seconds, number_of_unique_structures)``.
+    """
     disc_old, conv = get_methods(option)
     canonical_candidates = [conv(c.copy()) for c in candidates]
     t0 = perf_counter()
@@ -118,7 +81,20 @@ def time_original(candidates, option):
 
 
 def time_canonical(candidates, option):
-    """Measure the filtering time of the canonical method."""
+    """Measure the filtering time of the canonical method.
+
+    Parameters
+    ----------
+    candidates : list of numpy.ndarray
+        Candidate chains at the target level.
+    option : int
+        JAM option in 1..8.
+
+    Returns
+    -------
+    tuple
+        ``(elapsed_seconds, number_of_unique_structures)``.
+    """
     t0 = perf_counter()
     new_result = filter_duplicates(candidates, option)
     t1 = perf_counter()
@@ -126,14 +102,26 @@ def time_canonical(candidates, option):
 
 
 def benchmark_option(option, levels, max_time):
-    """
-    Benchmark both methods for a given option and set of levels.
+    """Benchmark both methods for a given option and set of levels.
 
     The original method is measured while its estimated time (based on
-    O(m²) scaling from the first measured level) stays below max_time.
+    O(m^2) scaling from the first measured level) stays below ``max_time``.
     Above that threshold, only the canonical method is measured.
 
-    Returns a list of dicts with the results.
+    Parameters
+    ----------
+    option : int
+        JAM option in 1..8.
+    levels : list of int
+        Layer counts to benchmark.
+    max_time : float
+        Maximum estimated time (in seconds) for the original method.
+
+    Returns
+    -------
+    list of dict
+        One dict per level with keys: ``option``, ``n``, ``candidates``,
+        ``t_old`` (float or None), ``t_new`` (float), ``measured`` (bool).
     """
     print(f"\n{'=' * 70}")
     print(f"Option {option}")
@@ -163,7 +151,7 @@ def benchmark_option(option, levels, max_time):
             speedup_str = f"{t_old / t_new:>9.1f}x" if t_new > 0 else "—"
             measured = True
         else:
-            n_ref, m_ref, t_ref = reference
+            _n_ref, m_ref, t_ref = reference
             t_old_est = t_ref * (m / m_ref) ** 2
 
             if t_old_est <= max_time:
@@ -241,7 +229,7 @@ def parse_args():
         "--output",
         default=OUTPUT_FILE,
         help=(
-            "Output TSV file path (default: benchmark_salida.tsv "
+            "Output TSV file path (default: benchmark_output.tsv "
             "next to this script)."
         ),
     )
@@ -249,7 +237,15 @@ def parse_args():
 
 
 def save_results(results, output_file):
-    """Save benchmark results to a TSV file."""
+    """Save benchmark results to a TSV file.
+
+    Parameters
+    ----------
+    results : list of dict
+        As returned by ``benchmark_option``.
+    output_file : str
+        Path to write.
+    """
     with open(output_file, "w", newline="") as f:
         writer = csv.writer(f, delimiter="\t")
         writer.writerow([
