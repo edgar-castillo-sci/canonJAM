@@ -25,7 +25,6 @@ Two implementations of the key are provided:
 
 import numpy as np
 
-
 # ─────────────────────────────────────────────
 # Basic operations
 # ─────────────────────────────────────────────
@@ -204,7 +203,7 @@ def sign(a):
                         y[i, j] = '+' + letter
             elif len(s) == 6:
                 sign1, letter1 = s[1], s[2]
-                sign2, letter2 = s[3], s[4]
+                _, letter2 = s[3], s[4]
                 if letter1 != letter2:
                     if sign1 == '+':
                         y[i, j] = '(-' + letter1 + '+' + letter2 + ')'

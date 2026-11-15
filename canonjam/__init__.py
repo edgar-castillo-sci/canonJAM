@@ -61,36 +61,41 @@ True
 """
 
 from .canonical import (
-    generate_group,
+    array_to_chain,
     canonical_key,
     canonical_key_fast,
-    filter_duplicates,
-    rot, transp, flip, sign,
-    sort_cols,
-    elements_S3,
-    array_to_chain,
     chain_to_array,
+    elements_S3,
+    filter_duplicates,
+    flip,
+    generate_group,
+    rot,
+    sign,
+    sort_cols,
+    transp,
 )
-
 from .options import (
-    rows_for_option,
     base_sets_for_option,
     base_tokens_for_option,
+    rows_for_option,
 )
 
 __all__ = [
-    "generate_group",
-    "canonical_key",
-    "canonical_key_fast",
-    "filter_duplicates",
-    "rot", "transp", "flip", "sign",
-    "sort_cols",
-    "elements_S3",
     "array_to_chain",
-    "chain_to_array",
-    "rows_for_option",
     "base_sets_for_option",
     "base_tokens_for_option",
+    "canonical_key",
+    "canonical_key_fast",
+    "chain_to_array",
+    "elements_S3",
+    "filter_duplicates",
+    "flip",
+    "generate_group",
+    "rot",
+    "rows_for_option",
+    "sign",
+    "sort_cols",
+    "transp",
 ]
 
 __version__ = "1.3.0"

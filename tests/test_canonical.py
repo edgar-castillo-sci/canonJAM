@@ -20,18 +20,17 @@ import numpy as np
 import pytest
 
 from canonjam import (
-    canonical_key,
-    filter_duplicates,
     array_to_chain,
+    canonical_key,
     chain_to_array,
-    generate_group,
     elements_S3,
-    rot,
-    transp,
+    filter_duplicates,
     flip,
+    generate_group,
+    rot,
     sign,
+    transp,
 )
-
 
 # ─────────────────────────────────────────────
 # Group

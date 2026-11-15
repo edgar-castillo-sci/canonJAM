@@ -65,4 +65,6 @@ if not os.path.isfile(xjam_script):
     print(f"Error: no x.jam found in {os.getcwd()}")
     sys.exit(1)
 
-exec(open(xjam_script).read())
+with open(xjam_script) as _f:
+    _xjam_source = _f.read()
+exec(_xjam_source)  # noqa: S102  (executing a local script is the point)

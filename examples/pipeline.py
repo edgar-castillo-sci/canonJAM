@@ -14,6 +14,7 @@ Usage:
 """
 
 import argparse
+
 import numpy as np
 
 from canonjam import filter_duplicates, rows_for_option

@@ -36,7 +36,6 @@ does not require ``numpy``.
 
 from itertools import permutations
 
-
 _BASE_TOKENS = {
     1: ['+0', '+j', '+j'],
     2: ['+0', '+j', '+k'],
