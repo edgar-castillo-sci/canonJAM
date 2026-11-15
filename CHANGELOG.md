@@ -1,3 +1,81 @@
+## [1.3.0] - 2026-11-15
+
+### Added
+
+- `DESIGN.md`: mid-level documentation (scope, architecture, public
+  API surface, index of ADRs, what this is NOT, related artifacts,
+  versioning pointer).
+- `docs/adr/`: five Architectural Decision Records covering the
+  scope of the package (ADR-0001), `canonical_key` vs
+  `canonical_key_fast` and the `filter_duplicates` API (ADR-0002),
+  numpy-only runtime (ADR-0003), test layout (ADR-0004), and
+  versioning/DOI policy (ADR-0005).
+- `docs/conventions.md`: filenames, bilingual READMEs, CI scripts,
+  commit format, the "grep for old path" rule.
+- `docs/README.md`: index of `docs/`.
+- `reproducibility/`: scripts that reproduce published counts and
+  closed forms. Self-contained (numpy + canonJAM only); not collected
+  by pytest.
+- `historical/`: discovery and audit scripts from the pre-paper
+  phase. Not maintained, not part of the test suite.
+- `Related artifacts` section in both READMEs, with placeholders for
+  the forthcoming paper and the Lean 4 formalization.
+
+### Changed
+
+- `tests/` now collects only `test_*.py` (formal tests of the library
+  API). Reproducibility scripts moved to `reproducibility/`,
+  exploration scripts to `historical/exploration/`, and audit
+  scripts to `historical/audit/`.
+- `tests/comparison/` remains the only location for scripts that
+  require `xjam2`.
+- `scripts/check_requires_python.py` moved to
+  `.github/scripts/check_requires_python.py` (CI utility, not
+  user-facing).
+- `README.md` and `README.es.md` rewritten: scope moved to the top,
+  justification moved to `DESIGN.md`, "What's in this repo" table
+  added. Both now under 150 lines.
+- `pyproject.toml`: `norecursedirs` now excludes `tests/comparison/`,
+  `historical/`, and `reproducibility/`.
+
+### Fixed
+
+- `canonjam/__init__.py`: `__all__` was `[..., "rows_for_option", ...]`
+  where `...` was a literal `Ellipsis`, so `from canonjam import *`
+  exported only three symbols plus a no-op Ellipsis. Collapsed into
+  a single explicit list of 14 names.
+- `.zenodo.json`: commit `232fa41` documented the removal of the
+  `version` field but did not apply it (the field was still present
+  with the stale value `1.1.0`). Removed for real. Without this fix,
+  the v1.3.0 release would again be archived as `1.1.0` and require
+  manual metadata correction on Zenodo, as happened with record
+  `23720668`.
+- `tests/comparison/README.md`: eight reproducibility-script paths
+  updated after the move to `reproducibility/`. Introductory
+  sentence corrected (`one level up in tests/` →
+  `two levels up in reproducibility/`).
+- `examples/pipeline.py`, `tests/comparison/{benchmark,full_report,validation}.py`,
+  `reproducibility/validation_table1.py`: unused imports removed
+  (ruff F401).
+
+### Removed
+
+- `docs/Sobre_la_canonicalizacion_de_cadenas_JAM.pdf` (obsolete;
+  superseded by the paper).
+- `tests/exploration/`, `tests/validation_session1/` (moved to
+  `historical/`).
+- `tests/benchmark_fast.py`, `tests/benchmark_fast.csv` (moved to
+  `historical/exploration/`; local experiments, never tracked).
+
+### Notes
+
+- No breaking changes for users who import `canonjam` directly.
+  `from canonjam import *` now exports the intended 14 names
+  (previously 3 + Ellipsis).
+- The `__all__` fix and `.zenodo.json` fix are patch-worthy on their
+  own; the reorganization, scope documentation, and ADRs are
+  minor-worthy. Combined: 1.3.0.
+
 ## [1.2.1] - 2026-10-27
 
 ### Changed
