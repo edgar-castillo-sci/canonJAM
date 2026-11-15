@@ -12,6 +12,12 @@ from .canonical import (
     chain_to_array,
 )
 
+from .options import (
+    rows_for_option,
+    base_sets_for_option,
+    base_tokens_for_option,
+)
+
 __all__ = [
     "generate_group",
     "canonical_key",
@@ -22,9 +28,9 @@ __all__ = [
     "elements_S3",
     "array_to_chain",
     "chain_to_array",
+    "rows_for_option",
+    "base_sets_for_option",
+    "base_tokens_for_option",
 ]
-
-from .options import rows_for_option, base_sets_for_option, base_tokens_for_option
-__all__ = [..., "rows_for_option", "base_sets_for_option", "base_tokens_for_option"]
 
 __version__ = "1.2.1"
