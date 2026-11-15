@@ -22,7 +22,7 @@ paper edits; all numerical claims of the paper are verified.
 ## Quick start
 
 ```bash
-cd tests/validation_session1
+cd historical/audit
 python3 run_all.py             # 16 checks, per-check status
 python3 run_all.py | tail -20  # summary only
 ```
@@ -761,11 +761,21 @@ install -e .` from the repo root or `PYTHONPATH=.`).
 
 ---
 
-## What to do next
+## What was done with these findings
 
-1. Apply the five edits (F1–F5) to `ve_OaM.tex` using the values in
-   this README.
-2. Insert `M(G)` and `B(G)` from `check03` into a new Appendix C.
-3. Add the caption note to Table 5.2 (`q = |Σ_k| = 3, 6, 6, 12` for
-   PL, BPL, BU, BBU).
-4. Rerun `python3 run_all.py` — must remain 16/16 PASS.
+All five findings (F1–F5) were applied to the paper draft and are
+present in the published version. This directory is the evidence trail
+of the audit that led to them; it is not a to-do list.
+
+For the record:
+
+1. F1 (mark formula multiplicity factor) — applied in §2.3 and
+   Appendix C.
+2. F2 (row vs column in Prop. 5.3) — applied.
+3. F3 (transpose in β_X = M a) — applied in §2.3 and §5.2.
+4. F4 (Burnside via row sums of B) — applied in §5.3.
+5. F5 (Definition 3.1 projection condition) — rewritten as
+   interpretation (ii).
+
+The numerical claims of the paper (Tables 1, 5.1, 5.2, and the
+closed forms of Theorem 5.5) were verified by these checks and match.
